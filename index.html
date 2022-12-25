@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .container {
+            max-width: 1140px;
+            margin: 0 auto;
+            margin-top: 100px;
+        }
+        .notes_editing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .notes_editing_item {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body> 
+    <div class="container">
+        <form novalidate action="#" class="notes_aditing">
+            <h1 class="notes_editing_item">Мои заметки</h1>
+            <textarea class="notes_editing_item" id="note" cols="100" rows="15" required></textarea>
+            <button class="notes_editing_item" onclick="validityTextarea()">Добавить</button>
+            <div id="errorMessage"></div>
+        </form>
+        <div class="block_notes">
+            <h2>Все заметки:</h2>
+            <div id="userNotes"></div>
+            <div id="oldNotes"></div>
+        </div>
+    </div>
+    <script>
+        'use strict';
+        let massiveOfNotes = [];
+        document.addEventListener('DOMContentLoaded', function(event) {
+            if (localStorage.getItem('note') != null) {
+                massiveOfNotes = JSON.parse(localStorage.getItem('note'));
+                for (let i = 0; i < massiveOfNotes.length; i++) {
+                    document.getElementById('oldNotes').innerHTML += `${massiveOfNotes[i]} <br>`;
+                }
+            }
+        });
+
+        //проверка на валидцю и добавление в массив данных 
+        const validityTextarea = () => {
+            document.getElementById('oldNotes').innerHTML = '';
+            document.getElementById('errorMessage').innerHTML = '';
+            const notes = document.getElementById('note').value; // заметки
+            const validityNote = document.getElementById('note').validity; //валидация заметки
+            if (validityNote.valueMissing) {
+                document.getElementById('errorMessage').innerHTML = 'Вы не написали заметку!<br>';
+            } else if (!validityNote.valueMissing) {
+                massiveOfNotes.push(notes); // добавляем в массив заметки
+                localStorage.setItem('note', JSON.stringify(
+                    massiveOfNotes)); // сохраняем в лок хранилище строку из массива
+                document.getElementById('note').value = ''; // очищаем строку
+            };
+            addNotes();
+        }
+        //добавление заметок на страницу 
+        function addNotes() {
+            let notesArea = '';
+            for (let i = 0; i < massiveOfNotes.length; i++) {
+                notesArea += `<div>${massiveOfNotes[i]}</div>`;
+            }
+            document.getElementById('userNotes').innerHTML = notesArea;
+        }
+    </script>
+</body>
+</html>
